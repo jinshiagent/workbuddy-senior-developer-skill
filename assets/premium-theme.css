@@ -1,0 +1,182 @@
+/*
+ * premium-theme.css — 可复用主题 Token + 玻璃拟态底层工具类
+ * 适用：原生 CSS 项目直接 @import；Tailwind 项目可作为 base 层或在 tailwind.config 中 extend。
+ * 作者：senior-developer skill v1.0.0  |  License: MIT
+ */
+
+/* =========================================================
+ * 1. 设计 Token（明暗双主题）
+ * ========================================================= */
+:root {
+  /* 颜色 */
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --text: #0f1115;
+  --text-muted: #5b6472;
+  --accent: #10b981;        /* 品牌绿 */
+  --accent-2: #6366f1;      /* 第二强调 靛 */
+  --border: rgba(0, 0, 0, 0.08);
+
+  /* 排版比例（Major Third 1.25） */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.563rem;
+  --fs-2xl: 1.953rem;
+  --fs-3xl: 2.441rem;
+  --fs-4xl: 3.052rem;
+
+  /* 间距（8px 栅格） */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 16px; --sp-4: 24px;
+  --sp-5: 32px; --sp-6: 48px; --sp-7: 64px; --sp-8: 96px; --sp-9: 128px;
+
+  /* 圆角 */
+  --radius: 20px;
+  --radius-btn: 12px;
+  --radius-pill: 999px;
+
+  /* 玻璃 */
+  --blur: 30px;
+  --saturate: 180%;
+
+  /* 阴影 */
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  /* 动效曲线 */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* 字体 */
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html.dark {
+  --bg: #0a0b0f;
+  --surface: #14161c;
+  --text: #eef1f6;
+  --text-muted: #9aa3b2;
+  --accent: #34d399;
+  --accent-2: #818cf8;
+  --border: rgba(255, 255, 255, 0.10);
+  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.45);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* =========================================================
+ * 2. 基础重置（轻量）
+ * ========================================================= */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  line-height: 1.6;
+  background: var(--bg);
+  color: var(--text);
+  transition: background-color .3s var(--ease-premium), color .3s var(--ease-premium);
+}
+
+/* =========================================================
+ * 3. 玻璃拟态工具类（核心）
+ * ========================================================= */
+.luxury-glass {
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  backdrop-filter: blur(var(--blur)) saturate(var(--saturate));
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--saturate));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-glass);
+}
+
+.luxury-glass-soft {
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  box-shadow: var(--shadow-soft);
+}
+
+.glass-panel {
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
+  backdrop-filter: blur(var(--blur)) saturate(var(--saturate));
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(var(--saturate));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* =========================================================
+ * 4. 渐变文字 / 磁力悬停 / 入场动画
+ * ========================================================= */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.magnetic {
+  transition: transform .3s var(--ease-premium), box-shadow .3s var(--ease-premium);
+  will-change: transform;
+}
+.magnetic:hover {
+  transform: scale(1.05) translateY(-2px);
+}
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+.reveal { animation: riseIn .6s var(--ease-premium) both; }
+
+/* 主题切换瞬时、无闪烁：过渡仅作用于颜色类，不对 backdrop-filter 做长过渡 */
+.theme-toggle {
+  transition: background-color .2s var(--ease-premium), color .2s var(--ease-premium);
+}
+
+/* =========================================================
+ * 5. 可访问性 / 动效降级
+ * ========================================================= */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .luxury-glass,
+  .luxury-glass-soft,
+  .glass-panel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--surface);
+  }
+}
+
+/* =========================================================
+ * 6. Tailwind 项目扩展片段（放入 tailwind.config.js）
+ * =========================================================
+ * export default {
+ *   content: ['./resources/**/*.{blade,js,ts,vue}'],
+ *   darkMode: 'class',
+ *   theme: {
+ *     extend: {
+ *       colors: {
+ *         bg: 'var(--bg)', surface: 'var(--surface)', text: 'var(--text)',
+ *         muted: 'var(--text-muted)', accent: 'var(--accent)', 'accent-2': 'var(--accent-2)',
+ *       },
+ *       borderRadius: { luxury: 'var(--radius)', btn: 'var(--radius-btn)' },
+ *       transitionTimingFunction: { premium: 'cubic-bezier(0.16,1,0.3,1)' },
+ *       boxShadow: { glass: 'var(--shadow-glass)', soft: 'var(--shadow-soft)' },
+ *     },
+ *   },
+ *   plugins: [require('@fluxui/inertia')],  // 如用 FluxUI
+ * };
+ */

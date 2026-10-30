@@ -1,0 +1,14 @@
+# ===== 打包产物（由 package.py 生成，无需入库） =====
+dist/
+
+# ===== 操作系统 / 编辑器缓存 =====
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# ===== Python 缓存 =====
+__pycache__/
+*.pyc
